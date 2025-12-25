@@ -2,7 +2,7 @@ name: Stock Checker
 
 on:
   schedule:
-    - cron: "0 * * * *"   # every 5 minutes
+    - cron: "0 * * * *"   # runs every hour
   workflow_dispatch:
 
 jobs:
@@ -23,3 +23,6 @@ jobs:
 
       - name: Run stock checker
         run: python stock-checker.py
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          CHAT_ID: ${{ secrets.CHAT_ID }}
