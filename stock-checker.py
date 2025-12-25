@@ -17,22 +17,31 @@ def send_telegram_message(message):
 
 def check_stock():
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = requests.get(PRODUCT_URL, headers=headers)
+    response = requests.get(PRODUCT_URL, headers=headers, timeout=15)
     soup = BeautifulSoup(response.text, "html.parser")
 
-    stock_element = soup.find("p", class_="stock")
-    if not stock_element:
-        print("Stock element not found")
-        return False
+    page_text = soup.get_text().lower()
 
-    classes = stock_element.get("class", [])
-    print("Stock classes:", classes)
+    # Words that DEFINITELY mean unavailable
+    out_of_stock_keywords = [
+        "out of stock",
+        "sold out",
+        "unavailable"
+    ]
 
-    return "in-stock" in classes
+    for word in out_of_stock_keywords:
+        if word in page_text:
+            print("Still out of stock")
+            return False
+
+    # If none of the negative words are found,
+    # assume availability or status change
+    print("Stock status changed")
+    return True
 
 if check_stock():
     send_telegram_message(
-        "🎉 The No Face Calendar is BACK IN STOCK!\n\n" + PRODUCT_URL
+        "🚨 Stock Alert!\n\n"
+        "The No Face Calendar appears to be AVAILABLE.\n\n"
+        f"{PRODUCT_URL}"
     )
-else:
-    print("Still out of stock")
