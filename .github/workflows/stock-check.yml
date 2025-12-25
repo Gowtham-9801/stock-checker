@@ -22,4 +22,4 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Run stock checker
-        run: python stock_checker.py
+        run: python stock-checker.py
